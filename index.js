@@ -1,4 +1,6 @@
 const authRoutes = require('./routes/auth');
+const userRoutes = require('./routes/user');
+
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
@@ -7,6 +9,13 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use('/api/auth', authRoutes);
+app.use(
+  cors({
+    origin: 'http://localhost:3000', // or wherever craftyclient is running
+    credentials: true, // optional if using cookies later
+  })
+);
+app.use('/api/user', userRoutes);
 
 const port = process.env.PORT || 5000;
 
