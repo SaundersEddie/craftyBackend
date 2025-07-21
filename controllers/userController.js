@@ -10,7 +10,7 @@ exports.register = async (req, res) => {
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
     const result = await pool.query(
-      `INSERT INTO users (email, password, first_name, last_name, theme_id)
+      `INSERT INTO users (email, password_hash, first_name, last_name, theme_id)
        VALUES ($1, $2, $3, $4, $5) RETURNING id, email`,
       [email, hashedPassword, first_name, last_name, theme_id]
     );
@@ -31,7 +31,7 @@ exports.login = async (req, res) => {
 
     if (!user) return res.status(401).json({ error: 'Invalid credentials' });
 
-    const valid = await bcrypt.compare(password, user.password);
+    const valid = await bcrypt.compare(password, user.password_hash);
     if (!valid) return res.status(401).json({ error: 'Invalid credentials' });
 
     const token = jwt.sign({ user_id: user.id, email: user.email }, process.env.JWT_SECRET, {
